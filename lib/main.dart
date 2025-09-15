@@ -1,56 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:starter_temp_weather_app/screens/loading_scree.dart';
 
 void main(List<String> args) {
   runApp(MaterialApp(home: LoadingScreen()));
 }
 
-class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
-
-  @override
-  State<LoadingScreen> createState() => _LoadingScreenState();
-}
-
-class _LoadingScreenState extends State<LoadingScreen> {
-  @override
-  void getLocation() {
-    // try {
-    //   Position p = await Geolocator.getCurrentPosition();
-    //   print(p);
-    // } catch (e) {
-    //   print(e);
-    // }
-
-    Geolocator.getCurrentPosition()
-        .then((position) {
-          print(position);
-        })
-        .catchError((e) {
-          print(e);
-        });
-  }
-
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            getLocation();
-          },
-          child: const Text("Get Location"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-}
 /*
 
-Future >> data , error
+Future >> data , error  >> Future.value   , Future.value
+
+
+
+1. Loading screen that load the position of the user by GEOLOCATOR 
+2. then Navigate to the location screen with the user Position 
+3. print inside the location screen the passing Position by widget keyword
+
+
+for seperated logic and arrgment can be :
+
+2. Location = Position = lat ,long  , getLocATION .. >> Model
+3. create UserLocation Model 
+4. put the getLocation method in it and handle errors by print or snakbar
+
+
 
 
 
