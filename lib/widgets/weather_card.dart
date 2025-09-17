@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:starter_temp_weather_app/widgets/weather_stat.dart';
 import 'package:intl/intl.dart';
 
+import 'package:starter_temp_weather_app/models/weather.dart';
+import 'package:starter_temp_weather_app/widgets/country_picker.dart';
+import 'package:starter_temp_weather_app/widgets/weather_stat.dart';
+import 'package:country_state_city_picker/country_state_city_picker.dart';
+
 class WeatherCard extends StatefulWidget {
-  final Map<String, dynamic> weather_data;
+  final Weather weather_data;
   const WeatherCard({super.key, required this.weather_data});
 
   @override
@@ -11,6 +15,32 @@ class WeatherCard extends StatefulWidget {
 }
 
 class _WeatherCardState extends State<WeatherCard> {
+  late String city;
+  late String country;
+  late String temp;
+  late String wind;
+  late String humidity;
+  late String clouds;
+  late int condition;
+  TextEditingController countryT = TextEditingController();
+  TextEditingController state = TextEditingController();
+  TextEditingController cityT = TextEditingController();
+  void updateUi() {
+    city = widget.weather_data.city;
+    country = widget.weather_data.country;
+    temp = widget.weather_data.temp;
+    wind = widget.weather_data.wind;
+    humidity = widget.weather_data.humidity;
+    clouds = widget.weather_data.clouds;
+    condition = widget.weather_data.condition;
+  }
+
+  @override
+  void initState() {
+    updateUi();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +70,26 @@ class _WeatherCardState extends State<WeatherCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        body: Center(
+                          child: Column(
+                            children: [
+                              CountryPicker(),
+                              // TextButton(
+                              //   onPressed: () => Navigator.pop(context),
+                              //   child: Text('back'),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ).then((value) => print(' ${value['city']}'));
+                },
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(30, 30),
                   shape: const CircleBorder(),
@@ -53,7 +102,7 @@ class _WeatherCardState extends State<WeatherCard> {
                   Icon(Icons.location_pin, color: Colors.white, size: 20),
                   SizedBox(width: 4),
                   Text(
-                    '${widget.weather_data['name']}',
+                    '$city',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 25,
@@ -65,19 +114,23 @@ class _WeatherCardState extends State<WeatherCard> {
               const Icon(Icons.more_vert_outlined, color: Colors.white),
             ],
           ),
-          Expanded(child: Image(image: AssetImage('assets/images/cloud.png'))),
+          Expanded(
+            child: Image(
+              image: AssetImage(
+                widget.weather_data.getWeatherImage(condition) ??
+                    'assets/images/cloud.png',
+              ),
+            ),
+          ),
           Text(
-            '${((widget.weather_data['main']['temp']) as double).toStringAsFixed(1)}°',
+            '${(widget.weather_data.temp)}°',
             style: TextStyle(
               fontSize: 100,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          Text(
-            '${widget.weather_data['sys']['country']} ,${widget.weather_data['sys']['name']}',
-            style: TextStyle(color: Colors.white),
-          ),
+          Text('$country ,$city}', style: TextStyle(color: Colors.white)),
           Text(
             '${DateFormat('EEEE , d MMMM').format(DateTime.now())}',
             style: TextStyle(color: Colors.white54, fontSize: 10),
@@ -88,17 +141,17 @@ class _WeatherCardState extends State<WeatherCard> {
             children: [
               WeatherStat(
                 icon: Icons.wind_power_outlined,
-                value: '${widget.weather_data['wind']['speed']} km/h',
+                value: '$wind km/h',
                 label: 'Wind',
               ),
               WeatherStat(
                 icon: Icons.water_drop_outlined,
-                value: '${widget.weather_data['main']['humidity']}%',
+                value: '$humidity%',
                 label: 'Humidity',
               ),
               WeatherStat(
                 icon: Icons.waves,
-                value: '${widget.weather_data['clouds']['all']}%',
+                value: '$clouds%',
                 label: 'Chance\nof rain',
               ),
             ],
